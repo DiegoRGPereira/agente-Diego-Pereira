@@ -66,6 +66,17 @@ with st.sidebar:
         st.caption("Lean Specialist")
     
     st.markdown('<div style="margin-top:10px;"><span class="status-badge">Open to Work</span></div>', unsafe_allow_html=True)
+    
+    # --- NOVO BOTÃO DE RESET AQUI ---
+    if st.button("🗑️ Nova Conversa", type="primary"):
+        # Reseta para o estado inicial (Regras + Boas vindas)
+        st.session_state.messages = [
+            {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
+            {"role": "model", "content": f"Olá! Sou a versão virtual do Diego (Rodando em {model_name}). Como posso auxiliar na otimização dos seus processos hoje?"}
+        ]
+        st.rerun()
+    # -------------------------------
+
     st.divider()
     
     # Gráfico Radar
@@ -125,6 +136,7 @@ if prompt := st.chat_input("Digite sua dúvida técnica..."):
             
         except Exception as e:
             st.error(f"Erro de conexão: {e}")
+
 
 
 
