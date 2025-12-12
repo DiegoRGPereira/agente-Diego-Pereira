@@ -51,7 +51,7 @@ CONTATO: diegogpereira@gmail.com
 
 # Configuração do Modelo Gemini 1.5
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-1.5-flash-latest",
     system_instruction=system_instruction
 )
 
@@ -121,4 +121,5 @@ if prompt := st.chat_input("Ex: Como tratar a falta de apontamento no MES?"):
         st.session_state.messages.append({"role": "model", "content": response.text})
         
     except Exception as e:
+
         st.error(f"Erro de conexão. Verifique a API Key. Detalhe: {e}")
