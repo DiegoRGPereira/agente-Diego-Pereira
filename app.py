@@ -38,8 +38,8 @@ def get_model():
 model_name = get_model()
 model = genai.GenerativeModel(model_name)
 
-# --- 4. CÉREBRO (REGRAS) ---
-system_instruction_text = """
+# --- 4. CÉREBRO (O TEXTO QUE VOCÊ QUERIA AJUSTAR) ---
+# Atenção: As aspas triplas abaixo são obrigatórias!
 system_instruction_text = """
 VOCÊ É O 'AGENTE VIRTUAL DIEGO PEREIRA'.
 CONTEXTO: Você está conversando com um Diretor/Gerente Sênior.
@@ -54,7 +54,6 @@ DIRETRIZES DE COMPORTAMENTO:
 4. SEU DIFERENCIAL: Você combina a vivência de chão de fábrica (Yamaha, Lear, 3M) com a capacidade analítica de dados (Python, Power BI) que o Diego possui.
 
 Se perguntarem quem é você: "Sou um assistente virtual treinado com o histórico profissional do Diego para demonstrar sua visão sobre Indústria 4.0."
-"""
 """
 
 # --- 5. BARRA LATERAL ---
@@ -91,11 +90,11 @@ with st.sidebar:
 st.title("🏭 Engenharia 4.0 | Diego Pereira")
 st.markdown("Discuta problemas de **Chão de Fábrica, OEE e Lean** com o assistente virtual.")
 
-# Inicializa Chat (SEM ESPAÇO ANTES DO IF)
+# Inicializa Chat
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
-        {"role": "model", "content": f"Olá! Sou a versão virtual do Diego (Rodando em {model_name}). Vamos discutir estratégias de Lean Manufacturing?"}
+        {"role": "model", "content": f"Olá! Sou a versão virtual do Diego (Rodando em {model_name}). Como posso auxiliar na otimização dos seus processos hoje?"}
     ]
 
 # Mostra as mensagens
