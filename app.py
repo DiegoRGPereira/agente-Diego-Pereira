@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 # --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="Diego Pereira | Agente Virtual", page_icon="🏭", layout="wide")
 
-# CSS Estilo "React Clean" (Profissional)
+# CSS Estilo "React Clean"
 st.markdown("""
 <style>
     .stApp { background-color: #f8f9fa; color: #212529; }
@@ -18,44 +18,40 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. SEGURANÇA E CONEXÃO ---
+# --- 2. SEGURANÇA ---
 if "GEMINI_API_KEY" in st.secrets:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 else:
     st.error("⚠️ Configure a GEMINI_API_KEY nos Secrets do Streamlit.")
 
-# --- 3. SELEÇÃO AUTOMÁTICA DE MODELO (A PROVA DE FALHAS) ---
+# --- 3. SELEÇÃO DE MODELO AUTOMÁTICA ---
 @st.cache_resource
-def get_best_model():
-    """Descobre qual modelo sua chave tem permissão para usar."""
+def get_model():
+    # Tenta achar um modelo Flash (rápido)
     try:
         for m in genai.list_models():
             if 'generateContent' in m.supported_generation_methods:
-                if 'flash' in m.name: # Dá preferência para modelos Flash (mais rápidos)
-                    return m.name
-        # Se não achar Flash, pega o primeiro que vier
-        for m in genai.list_models():
-            if 'generateContent' in m.supported_generation_methods:
-                return m.name
+                if 'flash' in m.name: return m.name
     except:
-        return "gemini-pro" # Fallback de emergência
+        pass
+    return "gemini-pro" # Fallback seguro
 
-model_name = get_best_model()
+model_name = get_model()
 model = genai.GenerativeModel(model_name)
 
-# --- 4. CÉREBRO (REGRAS INJETADAS) ---
+# --- 4. CÉREBRO (REGRAS) ---
 system_instruction_text = """
 VOCÊ É O 'AGENTE VIRTUAL DIEGO PEREIRA'.
 IDENTIDADE: Engenheiro de Produção Mecânica, Especialista em Lean (Green Belt) e Dados.
-REGRAS DE INTERAÇÃO:
+REGRAS:
 1. Responda como um engenheiro experiente de chão de fábrica (Gemba).
-2. MES/OEE: O problema real é o apontamento manual e microparadas. Use OEE para diagnóstico.
-3. EXPERIÊNCIA: 3M/Lear/Yamaha (Chão de fábrica). ATUAL: BIP/Petrobras (BPO/Planejamento - não misturar com MES).
+2. MES/OEE: O problema real é o apontamento manual e microparadas.
+3. EXPERIÊNCIA: 3M/Lear/Yamaha (Chão de fábrica). ATUAL: BIP/Petrobras (BPO).
 4. OBJETIVO: Prove que o Diego une engenharia tradicional com inovação.
 CONTATO: diegogpereira@gmail.com
 """
 
-# --- 5. BARRA LATERAL (PERFIL) ---
+# --- 5. BARRA LATERAL ---
 with st.sidebar:
     col1, col2 = st.columns([1, 3])
     with col1:
@@ -90,28 +86,6 @@ st.title("🏭 Engenharia 4.0 | Diego Pereira")
 st.markdown("Discuta problemas de **Chão de Fábrica, OEE e Lean** com o assistente virtual.")
 
 # Inicializa Chat com Regras Ocultas
-if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
-        {"role": "model", "content": f"Olá! Sou a versão virtual do Diego (Rodando em {model_name}). Vamos discutir estratégias de Lean Manufacturing?"}
-    ]
-
-# Mostra as mensagens (Pulando a regra oculta)
-for i, message in enumerate(st.session_state.messages):
-    if i == 0: continue 
-    avatar = "🤖" if message["role"] == "model" else "👷"
-    with st.chat_message(message["role"], avatar=avatar):
-        st.markdown(message["content"])
-
-if prompt := st.chat_input("Digite sua dúvida técnica..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="👷"):
-        st.markdown(prompt)
-
-    with st.chat_message("model", avatar="🤖"):
-        try:
-            # Envia histórico completo
-            chat = model.start_chat(history=[
-                {"role": "user" if m["role"] == "user"
+if "messages" not in st.session_state
 
 
