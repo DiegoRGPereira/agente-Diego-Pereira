@@ -86,7 +86,8 @@ st.title("🏭 Engenharia 4.0 | Diego Pereira")
 st.markdown("Discuta problemas de **Chão de Fábrica, OEE e Lean** com o assistente virtual.")
 
 # Inicializa Chat com Regras Ocultas
-    if "messages" not in st.session_state:
+  if "messages" not in st.session_state:
+
 
 
 
