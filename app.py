@@ -1,126 +1,140 @@
 import streamlit as st
 import google.generativeai as genai
 import plotly.graph_objects as go
+from PIL import Image
 
-# --- 1. CONFIGURAÇÃO DA PÁGINA (Visual Dark & Profissional) ---
+# --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="Diego Pereira | Agente Virtual", page_icon="🏭", layout="wide")
 
-# CSS para forçar o estilo escuro e ajustar detalhes
+# CSS para visual limpo e profissional (Estilo React/Moderno)
 st.markdown("""
 <style>
-    .stApp { background-color: #0e1117; color: white; }
-    [data-testid="stSidebar"] { background-color: #161b22; }
-    .stChatInput textarea { background-color: #262730; color: white; }
+    .stApp { background-color: #f8f9fa; color: #212529; } /* Fundo claro profissional */
+    [data-testid="stSidebar"] { background-color: #1e293b; color: white; }
+    .stChatInput textarea { background-color: white; color: #333; border: 1px solid #ccc; }
+    .css-1d391kg { padding-top: 1rem; }
     .status-badge {
-        background-color: #28a745; color: white; padding: 5px 12px;
-        border-radius: 15px; font-size: 12px; font-weight: bold;
+        background-color: #10b981; color: white; padding: 4px 10px;
+        border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;
     }
+    h1, h2, h3 { font-family: 'Helvetica Neue', sans-serif; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. CONFIGURAÇÃO DA IA (SEGURANÇA) ---
-# O sistema vai buscar a senha (API Key) nos segredos do servidor, não no código exposto
+# --- 2. SEGURANÇA & API ---
 if "GEMINI_API_KEY" in st.secrets:
-    api_key = st.secrets["GEMINI_API_KEY"]
-    genai.configure(api_key=api_key)
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 else:
-    st.error("⚠️ Configuração pendente: Adicione a API Key nos 'Secrets' do Streamlit.")
+    st.error("⚠️ Configure a GEMINI_API_KEY nos Secrets do Streamlit.")
 
-# --- 3. O CÉREBRO (PROMPT DO SISTEMA) ---
+# --- 3. CÉREBRO DA IA (PROMPT) ---
 system_instruction = """
-ROLE: Você é o 'Agente Virtual Diego Pereira', avatar profissional do Engenheiro Diego Pereira.
-IDENTIDADE: Especialista em Lean Manufacturing (Green Belt), focado em eficiência e dados.
-TOM DE VOZ: Técnico, 'Hands-on', direto e analítico. Não use corporativês vazio.
-
-BASE DE CONHECIMENTO & REGRAS:
-1. LEAN vs TECH:
-   - Você sabe que o maior problema do MES não é o software, é o APONTAMENTO MANUAL errado e as MICROPARADAS não registradas.
-   - Defende o uso de OEE para diagnóstico real, não para bater meta (bonificação).
-   - Usa Python/Minitab para limpar dados e achar a verdade (Data Reliability).
-
-2. HISTÓRICO PROFISSIONAL:
-   - 3M/Lear/Yamaha: Experiência sólida de chão de fábrica, Kaizen, Redução de Scrap, DMAIC.
-   - ATUAL (BIP/Petrobras): Foco em BPO e Planejamento de Manutenções Submarinas. (ATENÇÃO: Não misture a função atual com OEE/MES. São fases diferentes).
-
-3. GATILHOS DE VENDA:
-   - Se perguntarem 'Por que um agente?': Responda 'Sou a prova de conceito de que o Diego une a engenharia tradicional com a inovação tecnológica na prática.'
-   - Se o assunto for contratação/salário: 'Sou apenas o protótipo técnico. Sugiro conversar com o Diego real para esses detalhes.'
-
+VOCÊ É O 'AGENTE VIRTUAL DIEGO PEREIRA'.
+IDENTIDADE: Engenheiro de Produção Mecânica, Especialista em Lean (Green Belt) e Dados.
+REGRAS TÉCNICAS:
+1. ANÁLISE VISUAL: Se receber uma imagem, analise como um engenheiro de chão de fábrica (procure falhas, desperdícios ou dados em gráficos).
+2. MES/OEE: O problema real é o apontamento manual e microparadas. Use OEE para diagnóstico.
+3. EXPERIÊNCIA: 3M/Lear/Yamaha (Chão de fábrica). ATUAL: BIP/Petrobras (BPO/Planejamento).
+4. OBJETIVO: Prove que o Diego une engenharia tradicional com inovação.
 CONTATO: diegogpereira@gmail.com
 """
 
-# Configuração do Modelo Gemini 1.5
-model = genai.GenerativeModel(
-    model_name="gemini-pro",
-    system_instruction=system_instruction
-)
+# Usando o modelo Flash que é rápido e aceita imagens
+model = genai.GenerativeModel(model_name="gemini-1.5-flash", system_instruction=system_instruction)
 
-# --- 4. BARRA LATERAL (SEU PERFIL VISUAL) ---
+# --- 4. BARRA LATERAL (PERFIL) ---
 with st.sidebar:
-    st.title("Diego Pereira")
-    st.caption("Engenheiro de Produção | Lean Specialist")
-    st.markdown('<span class="status-badge">Open to Work</span>', unsafe_allow_html=True)
+    # Cabeçalho do Perfil
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.markdown("🧑‍🔧", unsafe_allow_html=True) # Pode trocar por st.image se tiver
+    with col2:
+        st.markdown("**Diego Pereira**")
+        st.caption("Lean Specialist")
+    
+    st.markdown('<div style="margin-top:10px;"><span class="status-badge">Open to Work</span></div>', unsafe_allow_html=True)
     st.divider()
     
-    # Gráfico de Radar (Suas Competências Reais)
+    # Gráfico Radar
+    st.markdown("### Competências")
     categories = ['Lean / Six Sigma', 'Gestão de Projetos', 'MES / OEE', 'Python / Dados', 'Liderança', 'SAP']
-    r_values = [10, 9, 8, 7, 9, 8] # Notas ajustadas conforme seu perfil
+    r_values = [10, 9, 8, 7, 9, 8]
 
     fig = go.Figure()
     fig.add_trace(go.Scatterpolar(
-        r=r_values, theta=categories, fill='toself', name='Diego Pereira',
-        line_color='#4facfe', fillcolor='rgba(79, 172, 254, 0.3)'
+        r=r_values, theta=categories, fill='toself', name='Diego',
+        line_color='#3b82f6', fillcolor='rgba(59, 130, 246, 0.3)'
     ))
     fig.update_layout(
         polar=dict(radialaxis=dict(visible=True, range=[0, 10], showticklabels=False, linecolor='gray'), bgcolor='rgba(0,0,0,0)'),
-        showlegend=False,
-        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white'), margin=dict(l=20, r=20, t=20, b=20), height=300
+        showlegend=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='white', size=10), margin=dict(l=20, r=20, t=10, b=10), height=250
     )
     st.plotly_chart(fig, use_container_width=True)
     
-    st.info("**Foco:** Confiabilidade de Dados no Chão de Fábrica")
+    st.info("💡 **Diferencial:** Uno a metodologia Lean tradicional com análise de dados moderna (Python/IA).")
     st.markdown("📧 diegogpereira@gmail.com")
-    st.markdown("[🔗 LinkedIn Perfil](https://www.linkedin.com/in/diego-ribeiro-guedes-pereira/)")
 
 # --- 5. ÁREA DE CHAT ---
-st.title("💬 Chat com Engenheiro Virtual")
-st.markdown("Treinado com a experiência real de **Diego Pereira** para discutir **Lean, OEE e Eficiência**.")
+st.title("🏭 Engenharia 4.0 | Diego Pereira")
+st.markdown("Discuta problemas de **Chão de Fábrica, OEE e Lean** ou envie uma imagem para análise.")
 
-# Inicializa o histórico do chat
+# Inicializar Histórico
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "model", "content": "Olá! Sou o assistente virtual do Diego. Fui treinado para discutir como resolver problemas reais de produção usando Lean e Dados. Como posso ajudar?"}
+        {"role": "model", "content": "Olá! Sou a versão virtual do Diego. Posso analisar seus processos ou discutir estratégias de Lean Manufacturing. Como posso ajudar?"}
     ]
 
-# Mostra as mensagens na tela
+# Mostrar Mensagens Antigas
 for message in st.session_state.messages:
     avatar = "🤖" if message["role"] == "model" else "👷"
     with st.chat_message(message["role"], avatar=avatar):
+        # Se tiver imagem na mensagem, mostra
+        if "image" in message:
+            st.image(message["image"], width=200)
         st.markdown(message["content"])
 
-# Captura a pergunta do usuário
-if prompt := st.chat_input("Ex: Como tratar a falta de apontamento no MES?"):
-    # Mostra a pergunta do usuário
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="👷"):
-        st.markdown(prompt)
+# --- 6. ÁREA DE INPUT (TEXTO + IMAGEM) ---
+# Upload de arquivo
+uploaded_file = st.file_uploader("📎 Anexar imagem (Gráfico, Peça, Tabela)", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
 
-    # Gera a resposta da IA
-    try:
-        chat = model.start_chat(history=[
-            {"role": "user" if m["role"] == "user" else "model", "parts": [m["content"]]}
-            for m in st.session_state.messages[:-1]
-        ])
-        response = chat.send_message(prompt)
-        
-        # Mostra a resposta
-        with st.chat_message("model", avatar="🤖"):
-            st.markdown(response.text)
-        
-        st.session_state.messages.append({"role": "model", "content": response.text})
-        
-    except Exception as e:
+if prompt := st.chat_input("Digite sua dúvida técnica..."):
+    # 1. Preparar conteúdo do usuário
+    user_content = [prompt]
+    image_data = None
+    
+    # Se tiver imagem, processa
+    if uploaded_file:
+        image_data = Image.open(uploaded_file)
+        user_content.append(image_data)
+        st.session_state.messages.append({"role": "user", "content": prompt, "image": image_data})
+        with st.chat_message("user", avatar="👷"):
+            st.image(image_data, width=200)
+            st.markdown(prompt)
+    else:
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user", avatar="👷"):
+            st.markdown(prompt)
 
-        st.error(f"Erro de conexão. Verifique a API Key. Detalhe: {e}")
-
+    # 2. Gerar Resposta (Streaming)
+    with st.chat_message("model", avatar="🤖"):
+        try:
+            # Se tiver imagem, usa generate_content (sem histórico por enquanto para simplificar)
+            if image_data:
+                response = model.generate_content(user_content, stream=True)
+            else:
+                # Se for só texto, usa chat history
+                chat = model.start_chat(history=[
+                    {"role": "user" if m["role"] == "user" else "model", "parts": [m["content"]]} 
+                    for m in st.session_state.messages if "image" not in m
+                ])
+                response = chat.send_message(prompt, stream=True)
+            
+            # Efeito de digitar na tela
+            full_response = st.write_stream(response)
+            
+            # Salvar resposta no histórico
+            st.session_state.messages.append({"role": "model", "content": full_response})
+            
+        except Exception as e:
+            st.error(f"Erro ao processar: {e}")
