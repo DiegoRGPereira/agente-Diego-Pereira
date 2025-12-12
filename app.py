@@ -27,14 +27,13 @@ else:
 # --- 3. SELEÇÃO DE MODELO AUTOMÁTICA ---
 @st.cache_resource
 def get_model():
-    # Tenta achar um modelo Flash (rápido)
     try:
         for m in genai.list_models():
             if 'generateContent' in m.supported_generation_methods:
                 if 'flash' in m.name: return m.name
     except:
         pass
-    return "gemini-pro" # Fallback seguro
+    return "gemini-pro"
 
 model_name = get_model()
 model = genai.GenerativeModel(model_name)
@@ -85,10 +84,40 @@ with st.sidebar:
 st.title("🏭 Engenharia 4.0 | Diego Pereira")
 st.markdown("Discuta problemas de **Chão de Fábrica, OEE e Lean** com o assistente virtual.")
 
-# Inicializa Chat com Regras Ocultas
-  if "messages" not in st.session_state:
+# Inicializa Chat (SEM ESPAÇO ANTES DO IF)
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
+        {"role": "model", "content": f"Olá! Sou a versão virtual do Diego (Rodando em {model_name}). Vamos discutir estratégias de Lean Manufacturing?"}
+    ]
 
+# Mostra as mensagens
+for i, message in enumerate(st.session_state.messages):
+    if i == 0: continue 
+    avatar = "🤖" if message["role"] == "model" else "👷"
+    with st.chat_message(message["role"], avatar=avatar):
+        st.markdown(message["content"])
 
+# Captura o Input
+if prompt := st.chat_input("Digite sua dúvida técnica..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user", avatar="👷"):
+        st.markdown(prompt)
 
+    with st.chat_message("model", avatar="🤖"):
+        try:
+            history_google = []
+            for m in st.session_state.messages[:-1]:
+                role = "user" if m["role"] == "user" else "model"
+                history_google.append({"role": role, "parts": [m["content"]]})
+            
+            chat = model.start_chat(history=history_google)
+            response = chat.send_message(prompt)
+            
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "model", "content": response.text})
+            
+        except Exception as e:
+            st.error(f"Erro de conexão: {e}")
 
 
