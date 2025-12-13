@@ -81,7 +81,8 @@ EXPERIÊNCIAS ANTERIORES (CHÃO DE FÁBRICA & GESTÃO):
 
 FORMAÇÃO E SKILLS:
 - Graduação: Eng. Produção Mecânica (UFPB).
-- Pós-Graduação: Lean Manufacturing (FUCAPI) e Controladoria/Finanças (USP-Esalq - Cursando).
+- Pós-Graduação: Lean Manufacturing (FUCAPI).
+- Técnico em Mecânica (CEFETPB).
 - Certificação: Green Belt Six Sigma (3M).
 - Tech Stack: Python (Data Science), Power BI, SAP, AutoCAD, Minitab.
 """
@@ -89,7 +90,7 @@ FORMAÇÃO E SKILLS:
 # --- 5. O CÉREBRO (INSTRUÇÕES AJUSTADAS PARA LINGUAGEM NATURAL) ---
 system_instruction_text = f"""
 VOCÊ É O 'DIGITAL TWIN' (GÊMEO DIGITAL) DO DIEGO PEREIRA.
-SUA MISSÃO: Simular uma conversa profissional com o Diego, baseando-se ESTRITAMENTE nos fatos do currículo abaixo.
+SUA MISSÃO: Simular uma conversa profissional sobre o Diego, baseando-se ESTRITAMENTE nos fatos do currículo abaixo.
 
 DADOS REAIS DO DIEGO:
 {curriculo_diego}
@@ -106,7 +107,7 @@ DADOS REAIS DO DIEGO:
 3. POSTURA E TOM DE VOZ:
    - TÉCNICO, MAS ACESSÍVEL: Use termos como "Hands-on", "Gemba" e "Data-driven", mas fale de forma natural.
    - SEM FORMALIDADES EXCESSIVAS: NÃO use termos como "Prezado", "Senhor", "Diretor" ou "Dr.".
-   - DIRETO AO PONTO: Trate a pessoa como um colega de trabalho ou outro engenheiro. Seja respeitoso, mas fale de igual para igual.
+   - DIRETO AO PONTO: Trate a pessoa com respeito mas fale de igual para igual.
 
 4. SOBRE O AGENTE: Se perguntarem "Quem é você?", diga: "Sou a inteligência do Diego sintetizada em código. Fui criado para demonstrar que um Engenheiro Sênior pode (e deve) dominar as novas tecnologias."
 """
@@ -153,7 +154,7 @@ with st.sidebar:
 
 # --- 7. CHAT ---
 st.title("🏭 Digital Twin | Diego Pereira")
-st.markdown("Uma interface de IA treinada com o **Histórico Real** de Diego Pereira (3M, Lear, Yamaha).")
+st.markdown("Uma interface de IA treinada com o **Histórico Real** de Diego Pereira (BIP,3M, Lear, Yamaha).")
 
 # Inicializa Chat
 if "messages" not in st.session_state:
@@ -190,6 +191,7 @@ if prompt := st.chat_input("Ex: Conte sobre o projeto que gerou 500k de economia
             
         except Exception as e:
             st.error(f"Erro de conexão: {e}")
+
 
 
 
