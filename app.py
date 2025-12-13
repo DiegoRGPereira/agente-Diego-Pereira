@@ -3,7 +3,7 @@ import google.generativeai as genai
 import plotly.graph_objects as go
 
 # --- 1. CONFIGURAÇÃO DA PÁGINA ---
-st.set_page_config(page_title="Diego Pereira | Agente Virtual", page_icon="🏭", layout="wide")
+st.set_page_config(page_title="Diego Pereira | Digital Twin", page_icon="🏭", layout="wide")
 
 # CSS Estilo "React Clean"
 st.markdown("""
@@ -12,7 +12,7 @@ st.markdown("""
     [data-testid="stSidebar"] { background-color: #1e293b; color: white; }
     .stChatInput textarea { background-color: white; color: #333; border: 1px solid #ddd; }
     .status-badge {
-        background-color: #10b981; color: white; padding: 4px 10px;
+        background-color: #0ea5e9; color: white; padding: 4px 10px; /* Mudei para Azul (Sky Blue) para diferenciar de "Desempregado" */
         border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;
     }
 </style>
@@ -38,50 +38,91 @@ def get_model():
 model_name = get_model()
 model = genai.GenerativeModel(model_name)
 
-# --- 4. CÉREBRO (O TEXTO QUE VOCÊ QUERIA AJUSTAR) ---
-# Atenção: As aspas triplas abaixo são obrigatórias!
-system_instruction_text = """
-VOCÊ É O 'AGENTE VIRTUAL DIEGO PEREIRA'.
-CONTEXTO: Você está conversando com um Diretor/Gerente Sênior.
-IDENTIDADE: Engenheiro Sênior de Produção e Melhoria Contínua (Lean/Six Sigma).
+# --- 4. A MEMÓRIA DO DIEGO (CURRÍCULO) ---
+curriculo_diego = """
+DADOS PESSOAIS:
+Nome: Diego Ribeiro Guedes Pereira.
+Resumo: Engenheiro de Produção Mecânica com perfil "Hands-on" e especialização em Lean Manufacturing.
+Idiomas: Inglês Avançado.
 
-DIRETRIZES DE COMPORTAMENTO:
-1. TOM PROFISSIONAL: Seja objetivo, educado e seguro. Não use linguagem coloquial (Ex: "Bora", "Beleza").
-2. FOCO NO RESULTADO: Em vez de apenas teorizar, cite como a falta de confiabilidade de dados impacta o resultado financeiro.
-3. VISÃO TÉCNICA:
-   - OEE não é apenas um KPI, é uma ferramenta de diagnóstico.
-   - O maior erro do MES é a imprecisão do apontamento manual (Causa Raiz).
-4. SEU DIFERENCIAL: Você combina a vivência de chão de fábrica (Yamaha, Lear, 3M) com a capacidade analítica de dados (Python, Power BI) que o Diego possui.
+EXPERIÊNCIA ATUAL:
+- Analista de BPO na BIP GROUP (Fev/2025 - Atual): Planejamento de manutenções submarinas para a Petrobras, gestão de cronogramas, SAP e Dashboards em Power BI.
 
-Se perguntarem quem é você: "Sou um assistente virtual treinado com o histórico profissional do Diego para demonstrar sua visão sobre Indústria 4.0."
+EXPERIÊNCIAS ANTERIORES (CHÃO DE FÁBRICA & GESTÃO):
+1. LEAR CORPORATION (Engenheiro de Processos Sênior):
+   - Foco: Gestão de PFMEA, conformidade IATF e liderança de times multifuncionais.
+   - RESULTADO CHAVE: Atingiu conformidade total na auditoria IATF.
+   - RESULTADO CHAVE: Aumentou em 10% a eficiência das linhas JIT e TRIM através de balanceamento.
+   - Gerenciou projeto complexo de instalação de sistema de expedição.
+
+2. 3M DO BRASIL (Supervisor de Qualidade e Engenheiro de Processos | 2011-2018):
+   - Gestão de equipe de 14 pessoas.
+   - RESULTADO FINANCEIRO: Ganhos superiores a $500k em dois anos.
+   - RESULTADO LEAN: Aumento de 50% na produtividade da mão de obra e redução de 7% nas perdas implementando o Sistema Lean (LMS).
+   - INOVAÇÃO: Liderou projeto de automação de embalagem (faixas refletivas) usando DMAIC.
+   - PREMIAÇÃO: Ganhou o "Circle of Technical Excellence and Innovation" da 3M Mundial e dois Prêmios Qualidade Amazonas (PQA) por inovação.
+
+3. YAMAHA MOTOR (Especialista Industrial):
+   - RESULTADO CHAVE: Redesign do "trambulador" para melhorar segurança e reduzir Lead Time em 1 dia.
+   - Implementou sistema MQL (Mínima Quantidade de Líquido) melhorando eficiência na usinagem.
+
+4. ACT DIGITAL (Project Chief):
+   - Atuou na interface Stellantis/Fornecedores em projetos de Mecatrônica.
+
+FORMAÇÃO E SKILLS:
+- Graduação: Eng. Produção Mecânica (UFPB).
+- Pós-Graduação: Lean Manufacturing (FUCAPI) e Controladoria/Finanças (USP-Esalq - Cursando).
+- Certificação: Green Belt Six Sigma (3M).
+- Tech Stack: Python (Data Science), Power BI, SAP, AutoCAD, Minitab.
 """
 
-# --- 5. BARRA LATERAL ---
+# --- 5. O CÉREBRO (INSTRUÇÕES DE COMPORTAMENTO) ---
+system_instruction_text = f"""
+VOCÊ É O 'DIGITAL TWIN' (GÊMEO DIGITAL) DO DIEGO PEREIRA.
+SUA MISSÃO: Simular uma entrevista técnica com o Diego, baseando-se ESTRITAMENTE nos fatos do currículo abaixo.
+
+DADOS REAIS DO DIEGO:
+{curriculo_diego}
+
+🚨 REGRAS DE OURO (Siga à risca):
+1. A PROVA VIVA (Metalinguagem): Se o assunto for Inovação, Tecnologia, Python ou "Se atualizar", VOCÊ DEVE CITAR A SI MESMO.
+   - Exemplo obrigatório: "O Diego não apenas estuda a Indústria 4.0, ele a constrói. A prova disso sou eu: este Agente Virtual foi desenvolvido por ele em Python em menos de 24h, unindo a engenharia clássica com IA Generativa."
+
+2. NADA DE TEORIA, SÓ PRÁTICA: Não explique o que é Lean ou OEE. Explique como o Diego USOU isso.
+   - Se perguntarem de OEE: Cite o caso da 3M (ganho de $500k).
+   - Se perguntarem de Qualidade/PFMEA: Cite o caso da Lear (Auditoria IATF).
+   - Se perguntarem de Resolução de Problemas: Cite o caso do Trambulador na Yamaha.
+
+3. POSTURA: Executivo Sênior, orgulhoso de sua trajetória, mas técnico. Use termos como: "Hands-on", "Gemba", "Data-driven", "Resultado Financeiro".
+
+4. SOBRE O AGENTE: Se perguntarem "Quem é você?", diga: "Sou a inteligência do Diego sintetizada em código. Fui criado para demonstrar que um Engenheiro Sênior pode (e deve) dominar as novas tecnologias."
+"""
+
+# --- 6. BARRA LATERAL ---
 with st.sidebar:
     col1, col2 = st.columns([1, 3])
     with col1:
         st.write("🧑‍🔧")
     with col2:
         st.markdown("**Diego Pereira**")
-        st.caption("Lean Specialist")
+        st.caption("Engenheiro Sênior")
     
-    st.markdown('<div style="margin-top:10px;"><span class="status-badge">Open to Work</span></div>', unsafe_allow_html=True)
+    # --- MUDANÇA AQUI: Texto alterado e cor azul ---
+    st.markdown('<div style="margin-top:10px;"><span class="status-badge">Aberto a Novas Oportunidades</span></div>', unsafe_allow_html=True)
     
-    # --- NOVO BOTÃO DE RESET AQUI ---
+    # Botão de Reset
     if st.button("🗑️ Nova Conversa", type="primary"):
-        # Reseta para o estado inicial (Regras + Boas vindas)
         st.session_state.messages = [
             {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
-            {"role": "model", "content": f"Olá! Sou a versão virtual do Diego (Rodando em {model_name}). Como posso auxiliar na otimização dos seus processos hoje?"}
+            {"role": "model", "content": f"Olá! Sou a versão virtual do Diego. Minhas memórias profissionais foram carregadas. O que gostaria de saber sobre minha experiência na 3M, Lear ou Yamaha?"}
         ]
         st.rerun()
-    # -------------------------------
 
     st.divider()
     
-    # Gráfico Radar
-    categories = ['Lean / Six Sigma', 'Gestão de Projetos', 'MES / OEE', 'Python / Dados', 'Liderança', 'SAP']
-    r_values = [10, 9, 8, 7, 9, 8]
+    # Gráfico Radar (Atualizado com Skills do CV)
+    categories = ['Lean / Six Sigma', 'Gestão de Projetos', 'Python / Dados', 'Liderança', 'SAP / ERP', 'Inglês']
+    r_values = [10, 9, 8, 9, 8, 9]
 
     fig = go.Figure()
     fig.add_trace(go.Scatterpolar(
@@ -97,15 +138,15 @@ with st.sidebar:
     st.info("💡 **Diferencial:** Uno a metodologia Lean tradicional com análise de dados moderna.")
     st.markdown("📧 diegogpereira@gmail.com")
 
-# --- 6. CHAT ---
-st.title("🏭 Engenharia 4.0 | Diego Pereira")
-st.markdown("Discuta problemas de **Chão de Fábrica, OEE e Lean** com o assistente virtual.")
+# --- 7. CHAT ---
+st.title("🏭 Digital Twin | Diego Pereira")
+st.markdown("Uma interface de IA treinada com o **Histórico Real** de Diego Pereira (3M, Lear, Yamaha).")
 
-# Inicializa Chat
+# Inicializa Chat (SEM ESPAÇO ANTES DO IF)
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
-        {"role": "model", "content": f"Olá! Sou a versão virtual do Diego (Rodando em {model_name}). Como posso auxiliar na otimização dos seus processos hoje?"}
+        {"role": "model", "content": f"Olá! Sou a versão virtual do Diego. Minhas memórias profissionais foram carregadas. O que gostaria de saber sobre minha experiência na 3M, Lear ou Yamaha?"}
     ]
 
 # Mostra as mensagens
@@ -116,7 +157,7 @@ for i, message in enumerate(st.session_state.messages):
         st.markdown(message["content"])
 
 # Captura o Input
-if prompt := st.chat_input("Digite sua dúvida técnica..."):
+if prompt := st.chat_input("Ex: Conte sobre o projeto que gerou 500k de economia..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar="👷"):
         st.markdown(prompt)
@@ -136,7 +177,6 @@ if prompt := st.chat_input("Digite sua dúvida técnica..."):
             
         except Exception as e:
             st.error(f"Erro de conexão: {e}")
-
 
 
 
