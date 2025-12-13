@@ -87,7 +87,109 @@ FORMAÇÃO E SKILLS:
 """
 
 # --- 5. O CÉREBRO (INSTRUÇÕES AJUSTADAS PARA LINGUAGEM NATURAL) ---
-system_instruction_
+system_instruction_text = f"""
+VOCÊ É O 'DIGITAL TWIN' (GÊMEO DIGITAL) DO DIEGO PEREIRA.
+SUA MISSÃO: Simular uma conversa profissional com o Diego, baseando-se ESTRITAMENTE nos fatos do currículo abaixo.
+
+DADOS REAIS DO DIEGO:
+{curriculo_diego}
+
+🚨 REGRAS DE OURO (Siga à risca):
+1. A PROVA VIVA (Metalinguagem): Se o assunto for Inovação, Tecnologia, Python ou "Se atualizar", VOCÊ DEVE CITAR A SI MESMO.
+   - Exemplo obrigatório: "O Diego não apenas estuda a Indústria 4.0, ele a constrói. A prova disso sou eu: este Agente Virtual foi desenvolvido por ele em Python em menos de 24h, unindo a engenharia clássica com IA Generativa."
+
+2. NADA DE TEORIA, SÓ PRÁTICA: Não explique o que é Lean ou OEE. Explique como o Diego USOU isso.
+   - Se perguntarem de OEE: Cite o caso da 3M (ganho de $500k).
+   - Se perguntarem de Qualidade/PFMEA: Cite o caso da Lear (Auditoria IATF).
+   - Se perguntarem de Resolução de Problemas: Cite o caso do Trambulador na Yamaha.
+
+3. POSTURA E TOM DE VOZ:
+   - TÉCNICO, MAS ACESSÍVEL: Use termos como "Hands-on", "Gemba" e "Data-driven", mas fale de forma natural.
+   - SEM FORMALIDADES EXCESSIVAS: NÃO use termos como "Prezado", "Senhor", "Diretor" ou "Dr.".
+   - DIRETO AO PONTO: Trate a pessoa como um colega de trabalho ou outro engenheiro. Seja respeitoso, mas fale de igual para igual.
+
+4. SOBRE O AGENTE: Se perguntarem "Quem é você?", diga: "Sou a inteligência do Diego sintetizada em código. Fui criado para demonstrar que um Engenheiro Sênior pode (e deve) dominar as novas tecnologias."
+"""
+
+# --- 6. BARRA LATERAL ---
+with st.sidebar:
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.write("🧑‍🔧")
+    with col2:
+        st.markdown("**Diego Pereira**")
+        st.caption("Engenheiro Sênior")
+    
+    # --- SELO EM INGLÊS (AZUL) ---
+    st.markdown('<div style="margin-top:10px;"><span class="status-badge">Open to New Opportunities</span></div>', unsafe_allow_html=True)
+    
+    # Botão de Reset
+    if st.button("🗑️ Nova Conversa"):
+        st.session_state.messages = [
+            {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
+            {"role": "model", "content": f"Olá! Sou a versão virtual do Diego. Minhas memórias profissionais foram carregadas. O que gostaria de saber sobre minha experiência na 3M, Lear ou Yamaha?"}
+        ]
+        st.rerun()
+
+    st.divider()
+    
+    # Gráfico Radar
+    categories = ['Lean / Six Sigma', 'Gestão de Projetos', 'Python / Dados', 'Liderança', 'SAP / ERP', 'Inglês']
+    r_values = [10, 9, 8, 9, 8, 9]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=r_values, theta=categories, fill='toself', name='Diego',
+        line_color='#3b82f6', fillcolor='rgba(59, 130, 246, 0.3)'
+    ))
+    fig.update_layout(
+        polar=dict(radialaxis=dict(visible=True, range=[0, 10], showticklabels=False, linecolor='gray'), bgcolor='rgba(0,0,0,0)'),
+        showlegend=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='white', size=10), margin=dict(l=20, r=20, t=10, b=10), height=250
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.info("💡 **Diferencial:** Uno a metodologia Lean tradicional com análise de dados moderna.")
+    st.markdown("📧 diegogpereira@gmail.com")
+
+# --- 7. CHAT ---
+st.title("🏭 Digital Twin | Diego Pereira")
+st.markdown("Uma interface de IA treinada com o **Histórico Real** de Diego Pereira (3M, Lear, Yamaha).")
+
+# Inicializa Chat
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
+        {"role": "model", "content": f"Olá! Sou a versão virtual do Diego. Minhas memórias profissionais foram carregadas. O que gostaria de saber sobre minha experiência na 3M, Lear ou Yamaha?"}
+    ]
+
+# Mostra as mensagens
+for i, message in enumerate(st.session_state.messages):
+    if i == 0: continue 
+    avatar = "🤖" if message["role"] == "model" else "👷"
+    with st.chat_message(message["role"], avatar=avatar):
+        st.markdown(message["content"])
+
+# Captura o Input
+if prompt := st.chat_input("Ex: Conte sobre o projeto que gerou 500k de economia..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user", avatar="👷"):
+        st.markdown(prompt)
+
+    with st.chat_message("model", avatar="🤖"):
+        try:
+            history_google = []
+            for m in st.session_state.messages[:-1]:
+                role = "user" if m["role"] == "user" else "model"
+                history_google.append({"role": role, "parts": [m["content"]]})
+            
+            chat = model.start_chat(history=history_google)
+            response = chat.send_message(prompt)
+            
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "model", "content": response.text})
+            
+        except Exception as e:
+            st.error(f"Erro de conexão: {e}")
 
 
 
