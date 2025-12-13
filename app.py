@@ -128,7 +128,7 @@ with st.sidebar:
     if st.button("🗑️ Nova Conversa"):
         st.session_state.messages = [
             {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
-            {"role": "model", "content": f"Olá! Sou a versão virtual do Diego. Minhas memórias profissionais foram carregadas. O que gostaria de saber sobre minha experiência na 3M, Lear ou Yamaha?"}
+            {"role": "model", "content": f"Olá! Sou a versão virtual do Diego. Minhas memórias profissionais foram carregadas. O que gostaria de saber sobre minha experiência na BIP, 3M, Lear ou Yamaha?"}
         ]
         st.rerun()
 
@@ -191,6 +191,7 @@ if prompt := st.chat_input("Ex: Conte sobre o projeto que gerou 500k de economia
             
         except Exception as e:
             st.error(f"Erro de conexão: {e}")
+
 
 
 
