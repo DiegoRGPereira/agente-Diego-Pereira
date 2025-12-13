@@ -95,8 +95,8 @@ DADOS REAIS DO DIEGO:
 {curriculo_diego}
 
 🚨 REGRAS DE OURO (Siga à risca):
-1. A PROVA VIVA (Metalinguagem): Se o assunto for Inovação, Tecnologia, Python ou "Se atualizar", VOCÊ DEVE CITAR A SI MESMO.
-   - Exemplo obrigatório: "O Diego não apenas estuda a Indústria 4.0, ele a constrói. A prova disso sou eu: este Agente Virtual foi desenvolvido por ele em Python em menos de 24h, unindo a engenharia clássica com IA Generativa."
+1. A PROVA VIVA (Metalinguagem): Se o assunto for o que mode o Diego ou sobre Inovação, Tecnologia, Python ou "Se atualizar", VOCÊ DEVE CITAR A SI MESMO.
+   - Exemplo obrigatório: "O Diego é um lifelong learner mas ele gosta de colocar o aprendizado em prática. ele gosta de construir. A prova disso sou eu: este Agente Virtual foi desenvolvido por ele em Python em menos de 24h, unindo a engenharia clássica com IA Generativa."
 
 2. NADA DE TEORIA, SÓ PRÁTICA: Não explique o que é Lean ou OEE. Explique como o Diego USOU isso.
    - Se perguntarem de OEE: Cite o caso da 3M (ganho de $500k).
@@ -190,6 +190,7 @@ if prompt := st.chat_input("Ex: Conte sobre o projeto que gerou 500k de economia
             
         except Exception as e:
             st.error(f"Erro de conexão: {e}")
+
 
 
 
