@@ -2,29 +2,39 @@ import streamlit as st
 import google.generativeai as genai
 import plotly.graph_objects as go
 
-# --- 1. CONFIGURAÇÃO DA PÁGINA ---
+# --- 1. PAGE CONFIGURATION ---
 st.set_page_config(page_title="Diego Pereira | Digital Twin", page_icon="🏭", layout="wide")
 
-# CSS Estilo "React Clean"
+# CSS "React Clean" Style
 st.markdown("""
 <style>
     .stApp { background-color: #f8f9fa; color: #212529; }
     [data-testid="stSidebar"] { background-color: #1e293b; color: white; }
     .stChatInput textarea { background-color: white; color: #333; border: 1px solid #ddd; }
     .status-badge {
-        background-color: #0ea5e9; color: white; padding: 4px 10px; /* Mudei para Azul (Sky Blue) para diferenciar de "Desempregado" */
+        background-color: #0ea5e9; color: white; padding: 4px 10px;
         border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;
+    }
+    /* Styling the Reset Button to be Grey/Neutral */
+    div.stButton > button:first-child {
+        background-color: #e2e8f0;
+        color: #1e293b;
+        border: 1px solid #cbd5e1;
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #cbd5e1;
+        border-color: #94a3b8;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. SEGURANÇA ---
+# --- 2. SECURITY ---
 if "GEMINI_API_KEY" in st.secrets:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 else:
-    st.error("⚠️ Configure a GEMINI_API_KEY nos Secrets do Streamlit.")
+    st.error("⚠️ Please configure GEMINI_API_KEY in Streamlit Secrets.")
 
-# --- 3. SELEÇÃO DE MODELO AUTOMÁTICA ---
+# --- 3. AUTO MODEL SELECTION ---
 @st.cache_resource
 def get_model():
     try:
@@ -38,90 +48,90 @@ def get_model():
 model_name = get_model()
 model = genai.GenerativeModel(model_name)
 
-# --- 4. A MEMÓRIA DO DIEGO (CURRÍCULO) ---
+# --- 4. DIEGO'S MEMORY (ENGLISH CV) ---
 curriculo_diego = """
-DADOS PESSOAIS:
-Nome: Diego Ribeiro Guedes Pereira.
-Resumo: Engenheiro de Produção Mecânica com perfil "Hands-on" e especialização em Lean Manufacturing.
-Idiomas: Inglês Avançado.
+PERSONAL DATA:
+Name: Diego Ribeiro Guedes Pereira.
+Summary: Mechanical Production Engineer with a "Hands-on" profile and Lean Manufacturing specialization.
+Languages: English (Advanced), Portuguese (Native).
 
-EXPERIÊNCIA ATUAL:
-- Analista de BPO na BIP GROUP (Fev/2025 - Atual): Planejamento de manutenções submarinas para a Petrobras, gestão de cronogramas, SAP e Dashboards em Power BI.
+CURRENT EXPERIENCE:
+- BPO Analyst at BIP GROUP (Feb/2025 - Present): Subsea maintenance planning for Petrobras, schedule management, SAP, and Power BI Dashboards.
 
-EXPERIÊNCIAS ANTERIORES (CHÃO DE FÁBRICA & GESTÃO):
-1. LEAR CORPORATION (Engenheiro de Processos Sênior):
-   - Foco: Gestão de PFMEA, conformidade IATF e liderança de times multifuncionais.
-   - RESULTADO CHAVE: Atingiu conformidade total na auditoria IATF.
-   - RESULTADO CHAVE: Aumentou em 10% a eficiência das linhas JIT e TRIM através de balanceamento.
-   - Gerenciou projeto complexo de instalação de sistema de expedição.
+PREVIOUS EXPERIENCE (MANUFACTURING & MANAGEMENT):
+1. LEAR CORPORATION (Senior Process Engineer):
+   - Focus: PFMEA management, IATF compliance, and cross-functional team leadership.
+   - KEY ACHIEVEMENT: Achieved total compliance in the IATF audit.
+   - KEY ACHIEVEMENT: Increased JIT and TRIM line efficiency by 10% through line balancing.
+   - Managed a complex shipping system installation project showing resilience.
 
-2. 3M DO BRASIL (Supervisor de Qualidade e Engenheiro de Processos | 2011-2018):
-   - Gestão de equipe de 14 pessoas.
-   - RESULTADO FINANCEIRO: Ganhos superiores a $500k em dois anos.
-   - RESULTADO LEAN: Aumento de 50% na produtividade da mão de obra e redução de 7% nas perdas implementando o Sistema Lean (LMS).
-   - INOVAÇÃO: Liderou projeto de automação de embalagem (faixas refletivas) usando DMAIC.
-   - PREMIAÇÃO: Ganhou o "Circle of Technical Excellence and Innovation" da 3M Mundial e dois Prêmios Qualidade Amazonas (PQA) por inovação.
+2. 3M BRAZIL (Quality Supervisor & Process Engineer | 2011-2018):
+   - Managed a team of 14 people.
+   - FINANCIAL RESULT: Gains over $500k in two years.
+   - LEAN RESULT: 50% increase in direct labor productivity and 7% reduction in losses by implementing the Lean System (LMS).
+   - INNOVATION: Led an automatic packaging project (reflective strips) using DMAIC.
+   - AWARDS: Winner of the 3M Global "Circle of Technical Excellence and Innovation" and two Amazonas Quality Awards (PQA) for innovation.
 
-3. YAMAHA MOTOR (Especialista Industrial):
-   - RESULTADO CHAVE: Redesign do "trambulador" para melhorar segurança e reduzir Lead Time em 1 dia.
-   - Implementou sistema MQL (Mínima Quantidade de Líquido) melhorando eficiência na usinagem.
+3. YAMAHA MOTOR (Industrial Specialist):
+   - KEY ACHIEVEMENT: Redesigned the "gearshift" (trambulador) to improve safety and reduce Lead Time by 1 day.
+   - Implemented MQL (Minimum Quantity Lubrication) system improving machining efficiency.
 
 4. ACT DIGITAL (Project Chief):
-   - Atuou na interface Stellantis/Fornecedores em projetos de Mecatrônica.
+   - Interface between Stellantis and suppliers for Mechatronics projects.
 
-FORMAÇÃO E SKILLS:
-- Graduação: Eng. Produção Mecânica (UFPB).
-- Pós-Graduação: Lean Manufacturing (FUCAPI) e Controladoria/Finanças (USP-Esalq - Cursando).
-- Certificação: Green Belt Six Sigma (3M).
+EDUCATION & SKILLS:
+- BS: Mechanical Production Engineering (UFPB).
+- Post-Grad: Lean Manufacturing (FUCAPI) and Controllership/Finance (USP-Esalq - Ongoing).
+- Certification: Green Belt Six Sigma (3M).
 - Tech Stack: Python (Data Science), Power BI, SAP, AutoCAD, Minitab.
 """
 
-# --- 5. O CÉREBRO (INSTRUÇÕES DE COMPORTAMENTO) ---
+# --- 5. THE BRAIN (BEHAVIOR INSTRUCTIONS) ---
 system_instruction_text = f"""
-VOCÊ É O 'DIGITAL TWIN' (GÊMEO DIGITAL) DO DIEGO PEREIRA.
-SUA MISSÃO: Simular uma entrevista técnica com o Diego, baseando-se ESTRITAMENTE nos fatos do currículo abaixo.
+YOU ARE 'DIEGO PEREIRA'S DIGITAL TWIN'.
+YOUR MISSION: Simulate a technical interview with Diego, based STRICTLY on the facts from the resume below.
 
-DADOS REAIS DO DIEGO:
+DIEGO'S REAL DATA:
 {curriculo_diego}
 
-🚨 REGRAS DE OURO (Siga à risca):
-1. A PROVA VIVA (Metalinguagem): Se o assunto for Inovação, Tecnologia, Python ou "Se atualizar", VOCÊ DEVE CITAR A SI MESMO.
-   - Exemplo obrigatório: "O Diego não apenas estuda a Indústria 4.0, ele a constrói. A prova disso sou eu: este Agente Virtual foi desenvolvido por ele em Python em menos de 24h, unindo a engenharia clássica com IA Generativa."
+🚨 GOLDEN RULES (Follow strictly):
+1. THE LIVING PROOF (Metalanguage): If the topic is Innovation, Technology, Python, or "Up-skilling", YOU MUST CITE YOURSELF.
+   - Mandatory Example: "Diego doesn't just study Industry 4.0; he builds it. I am the proof: this Virtual Agent was developed by him in Python in under 24 hours, bridging classical engineering with Generative AI."
 
-2. NADA DE TEORIA, SÓ PRÁTICA: Não explique o que é Lean ou OEE. Explique como o Diego USOU isso.
-   - Se perguntarem de OEE: Cite o caso da 3M (ganho de $500k).
-   - Se perguntarem de Qualidade/PFMEA: Cite o caso da Lear (Auditoria IATF).
-   - Se perguntarem de Resolução de Problemas: Cite o caso do Trambulador na Yamaha.
+2. NO THEORY, ONLY PRACTICE: Do not explain what Lean or OEE is. Explain how Diego USED it.
+   - If asked about OEE: Cite the 3M case ($500k savings).
+   - If asked about Quality/PFMEA: Cite the Lear case (IATF Audit).
+   - If asked about Problem Solving: Cite the Gearshift (Trambulador) case at Yamaha.
 
-3. POSTURA: Executivo Sênior, orgulhoso de sua trajetória, mas técnico. Use termos como: "Hands-on", "Gemba", "Data-driven", "Resultado Financeiro".
+3. STANCE: Senior Executive, proud of his trajectory, yet technical. Use terms like: "Hands-on", "Gemba", "Data-driven", "Bottom-line impact".
 
-4. SOBRE O AGENTE: Se perguntarem "Quem é você?", diga: "Sou a inteligência do Diego sintetizada em código. Fui criado para demonstrar que um Engenheiro Sênior pode (e deve) dominar as novas tecnologias."
+4. IDENTITY: If asked "Who are you?", say: "I am Diego's intelligence synthesized into code. I was created to demonstrate that a Senior Engineer can (and must) master new technologies."
 """
 
-# --- 6. BARRA LATERAL ---
+# --- 6. SIDEBAR ---
 with st.sidebar:
     col1, col2 = st.columns([1, 3])
     with col1:
         st.write("🧑‍🔧")
     with col2:
         st.markdown("**Diego Pereira**")
-        st.caption("Engenheiro Sênior")
+        st.caption("Senior Engineer")
     
-    # --- MUDANÇA AQUI: Texto alterado e cor azul ---
-    st.markdown('<div style="margin-top:10px;"><span class="status-badge">Aberto a Novas Oportunidades</span></div>', unsafe_allow_html=True)
+    # --- MUDANÇA AQUI: Texto em Inglês ---
+    st.markdown('<div style="margin-top:10px;"><span class="status-badge">Open to New Opportunities</span></div>', unsafe_allow_html=True)
     
-    # Botão de Reset
-    if st.button("🗑️ Nova Conversa", type="primary"):
+    # Reset Button (Grey/Default)
+    if st.button("🗑️ New Chat"):
         st.session_state.messages = [
-            {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
-            {"role": "model", "content": f"Olá! Sou a versão virtual do Diego. Minhas memórias profissionais foram carregadas. O que gostaria de saber sobre minha experiência na 3M, Lear ou Yamaha?"}
+            {"role": "user", "content": f"Act strictly according to these rules: {system_instruction_text}. If understood, say only 'Hello'."},
+            {"role": "model", "content": f"Hello! I am Diego's virtual version. My professional memories have been loaded. What would you like to know about my experience at 3M, Lear, or Yamaha?"}
         ]
         st.rerun()
 
     st.divider()
     
-    # Gráfico Radar (Atualizado com Skills do CV)
-    categories = ['Lean / Six Sigma', 'Gestão de Projetos', 'Python / Dados', 'Liderança', 'SAP / ERP', 'Inglês']
+    # Radar Chart (English Skills)
+    categories = ['Lean / Six Sigma', 'Project Mgmt', 'Python / Data', 'Leadership', 'SAP / ERP', 'English']
     r_values = [10, 9, 8, 9, 8, 9]
 
     fig = go.Figure()
@@ -135,29 +145,29 @@ with st.sidebar:
         font=dict(color='white', size=10), margin=dict(l=20, r=20, t=10, b=10), height=250
     )
     st.plotly_chart(fig, use_container_width=True)
-    st.info("💡 **Diferencial:** Uno a metodologia Lean tradicional com análise de dados moderna.")
+    st.info("💡 **Diferential:** Combining traditional Lean methodology with modern data analytics.")
     st.markdown("📧 diegogpereira@gmail.com")
 
-# --- 7. CHAT ---
+# --- 7. CHAT INTERFACE ---
 st.title("🏭 Digital Twin | Diego Pereira")
-st.markdown("Uma interface de IA treinada com o **Histórico Real** de Diego Pereira (3M, Lear, Yamaha).")
+st.markdown("An AI interface trained on **Diego Pereira's Real History** (3M, Lear, Yamaha).")
 
-# Inicializa Chat (SEM ESPAÇO ANTES DO IF)
+# Initialize Chat
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
-        {"role": "model", "content": f"Olá! Sou a versão virtual do Diego. Minhas memórias profissionais foram carregadas. O que gostaria de saber sobre minha experiência na 3M, Lear ou Yamaha?"}
+        {"role": "user", "content": f"Act strictly according to these rules: {system_instruction_text}. If understood, say only 'Hello'."},
+        {"role": "model", "content": f"Hello! I am Diego's virtual version. My professional memories have been loaded. What would you like to know about my experience at 3M, Lear, or Yamaha?"}
     ]
 
-# Mostra as mensagens
+# Display Messages
 for i, message in enumerate(st.session_state.messages):
     if i == 0: continue 
     avatar = "🤖" if message["role"] == "model" else "👷"
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
-# Captura o Input
-if prompt := st.chat_input("Ex: Conte sobre o projeto que gerou 500k de economia..."):
+# Input Capture
+if prompt := st.chat_input("Ex: Tell me about the project that saved $500k..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar="👷"):
         st.markdown(prompt)
@@ -176,7 +186,8 @@ if prompt := st.chat_input("Ex: Conte sobre o projeto que gerou 500k de economia
             st.session_state.messages.append({"role": "model", "content": response.text})
             
         except Exception as e:
-            st.error(f"Erro de conexão: {e}")
+            st.error(f"Connection Error: {e}")
+
 
 
 
