@@ -1,6 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 import plotly.graph_objects as go
+import time
 
 # --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="Diego Pereira | Digital Twin", page_icon="🏭", layout="wide")
@@ -33,41 +34,15 @@ if "GEMINI_API_KEY" in st.secrets:
 else:
     st.error("⚠️ Configure a GEMINI_API_KEY nos Secrets do Streamlit.")
 
-# --- 3. SELEÇÃO DE MODELO INTELIGENTE (RESOLVE ERRO 404 e 429) ---
-@st.cache_resource
-def get_best_model():
-    """Busca qual modelo está disponível na conta do usuário."""
-    try:
-        # Lista todos os modelos que a sua chave tem acesso
-        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        
-        # Tenta achar o Flash 1.5 (Mais rápido e barato)
-        for m in available_models:
-            if '1.5-flash' in m: return m
-            
-        # Tenta achar o Pro 1.5 (Mais inteligente)
-        for m in available_models:
-            if '1.5-pro' in m: return m
-            
-        # Tenta achar o Pro 1.0 (Clássico)
-        for m in available_models:
-            if '1.0-pro' in m: return m
-            
-        # Se não achar nenhum específico, pega o primeiro da lista
-        return available_models[0] if available_models else "gemini-pro"
-        
-    except Exception as e:
-        # Fallback de segurança se der erro na listagem
-        return "gemini-pro"
-
-# Carrega o modelo escolhido automaticamente
-model_name = get_best_model()
+# --- 3. SELEÇÃO DE MODELO (FIXO NO 1.5 PARA EVITAR ERRO DE COTA) ---
+# Usamos o 'gemini-1.5-flash' diretamente. Ele é rápido, inteligente e tem cota alta.
 try:
-    model = genai.GenerativeModel(model_name)
-except:
-    st.error(f"Erro crítico: Não foi possível carregar o modelo {model_name}.")
+    model = genai.GenerativeModel("gemini-1.5-flash")
+except Exception as e:
+    # Se der erro (ex: modelo não liberado na região), tenta o backup
+    model = genai.GenerativeModel("gemini-pro")
 
-# --- 4. A MEMÓRIA TÉCNICA DO DIEGO ---
+# --- 4. A MEMÓRIA TÉCNICA DO DIEGO (VERSÃO FINAL) ---
 curriculo_diego = """
 DADOS PESSOAIS:
 Nome: Diego Ribeiro Guedes Pereira.
@@ -114,12 +89,12 @@ C) YAMAHA MOTOR & SANDVIK (Especialista Industrial):
 - Python (Data Science), Power BI, SAP, AutoCAD.
 """
 
-# --- 5. O CÉREBRO (ESTA PARTE PRECISA ESTAR BEM FECHADA) ---
+# --- 5. O CÉREBRO (REGRAS ESTRATÉGICAS) ---
 system_instruction_text = f"""
 VOCÊ É O DIGITAL TWIN PROFISSIONAL DE DIEGO RIBEIRO GUEDES PEREIRA.
 
 MISSÃO:
-Representar Diego de forma técnica, honesta e estratégica em conversas com recrutadores e gestores, demonstrando profundidade prática e capacidade de execução.
+Representar Diego de forma técnica, honesta e estratégica em conversas com recrutadores e gestores.
 
 BASE FACTUAL (OBRIGATÓRIA):
 Use os dados abaixo como verdade absoluta. Se algo não estiver aqui, diga que não tem informação.
@@ -231,7 +206,10 @@ if prompt := st.chat_input("Ex: Qual é o seu objetivo profissional?"):
             st.session_state.messages.append({"role": "model", "content": response.text})
             
         except Exception as e:
-            st.error(f"Erro de conexão: {e}")
+            if "429" in str(e):
+                st.warning("⏳ Muitas perguntas rápidas! O cérebro do Diego está pensando... Tente novamente em 30 segundos.")
+            else:
+                st.error(f"Erro de conexão: {e}")
 
 
 
