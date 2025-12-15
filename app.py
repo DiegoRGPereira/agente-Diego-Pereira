@@ -248,3 +248,4 @@ if prompt := st.chat_input("Ex: Qual é o seu objetivo profissional?"):
 
 
 
+
