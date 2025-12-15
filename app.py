@@ -33,34 +33,29 @@ if "GEMINI_API_KEY" in st.secrets:
 else:
     st.error("⚠️ Configure a GEMINI_API_KEY nos Secrets do Streamlit.")
 
-# --- 3. SELEÇÃO DE MODELO AUTOMÁTICA ---
-@st.cache_resource
-def get_model():
-    try:
-        for m in genai.list_models():
-            if 'generateContent' in m.supported_generation_methods:
-                if 'flash' in m.name: return m.name
-    except:
-        pass
-    return "gemini-pro"
+# --- 3. SELEÇÃO DE MODELO (CORRIGIDO PARA EVITAR ERRO 429) ---
+# Forçamos o modelo 1.5 Flash que tem limites maiores no plano gratuito
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-model_name = get_model()
-model = genai.GenerativeModel(model_name)
-
-# --- 4. A MEMÓRIA TÉCNICA DO DIEGO (COM PROJETO AUTORAL) ---
+# --- 4. A MEMÓRIA TÉCNICA DO DIEGO ---
 curriculo_diego = """
 DADOS PESSOAIS:
 Nome: Diego Ribeiro Guedes Pereira.
-Resumo: Engenheiro de Produção Mecânica Sênior. Perfil Hands-on. Especialista em Lean, Dados e Planejamento Offshore.
+Resumo: Engenheiro de Produção e Processos Sênior | Especialista em Lean, Melhoria Contínua e Dados.
 Idiomas: Inglês Avançado.
 
-1. EXPERIÊNCIA ATUAL (OFFSHORE/PLANEJAMENTO):
+1. OBJETIVO PROFISSIONAL (A MISSÃO):
+- POSIÇÃO ALVO: Engenheiro de Processos / Engenheiro de Produção Sênior.
+- MISSÃO ESTRATÉGICA: "Atuar como Engenheiro de Processos, integrando sólida experiência em operações industriais ao uso de tecnologia e dados para resolver problemas complexos e apoiar decisões estratégicas."
+- DIFERENCIAL: A capacidade de traduzir desafios físicos do chão de fábrica em soluções analíticas (Python/BI) que geram economia real.
+
+2. EXPERIÊNCIA ATUAL (OFFSHORE/PLANEJAMENTO):
 - Analista de BPO na BIP GROUP (Fev/2025 - Atual).
 - ESCOPO: Planejamento e gestão de atividades submarinas para a Petrobras (Bacia de Santos).
 - DETALHES TÉCNICOS: Gestão de restrições críticas como Clima, SIMOPS (Operações Simultâneas), UMS e interfaces multidisciplinares.
 - FERRAMENTAS: SAP, Power BI (Dashboards Gerenciais) e gestão de cronogramas complexos.
 
-2. EXPERIÊNCIAS ANTERIORES (CHÃO DE FÁBRICA & LEAN):
+3. EXPERIÊNCIAS ANTERIORES (CHÃO DE FÁBRICA & LEAN):
 A) LEAR CORPORATION (Engenheiro de Processos Sênior):
    - Liderança técnica em PFMEA e Auditorias IATF (Conformidade Total Atingida).
    - Aumentou em 10% a eficiência das linhas JIT e TRIM via balanceamento.
@@ -77,20 +72,16 @@ C) YAMAHA MOTOR & SANDVIK (Especialista Industrial):
    - CASO REAL: Redesign do trambulador (Gearshift) reduzindo Lead Time em 1 dia e melhorando segurança.
    - Implementação de MQL (Mínima Quantidade de Líquido) na usinagem.
 
-3. PROJETO AUTORAL (PORTFÓLIO DE INOVAÇÃO):
-- DESENVOLVIMENTO DE AGENTE "DIGITAL TWIN" (2025):
-  - O Diego projetou e codificou este Agente Virtual (que você está usando agora).
-  - TECNOLOGIAS: Python, Framework Streamlit, Integração via API com LLMs (IA Generativa).
-  - OBJETIVO: Demonstrar capacidade de aprendizado rápido e aplicação prática de Indústria 4.0 para resolver problemas de comunicação.
+4. PORTFÓLIO DE INOVAÇÃO (A PROVA "TECH"):
+- PROJETO "DIGITAL TWIN" (2025):
+  - O Diego projetou e codificou este Agente Virtual em Python.
+  - Isso comprova sua capacidade de aprender novas tecnologias e aplicá-las para modernizar a engenharia tradicional.
 
-4. FORMAÇÃO:
+5. FORMAÇÃO "HARD + SOFT":
 - Eng. Produção Mecânica (UFPB).
 - Pós em Lean Manufacturing (FUCAPI) e Finanças (USP-Esalq).
 - Green Belt Six Sigma (3M).
 - Python (Data Science), Power BI, SAP, AutoCAD.
-
-5. Objetivos profissionais:
-- Atuar como Engenheiro de Processos, integrando experiência sólida em engenharia de processos e operações ao uso de tecnologia e dados para resolver problemas complexos e apoiar decisões estratégica
 """
 
 # --- 5. O CÉREBRO (COM REGRAS DE REFERÊNCIA CRUZADA) ---
@@ -113,16 +104,18 @@ ESTILO DE RESPOSTA:
 - Foque sempre em COMO Diego fez, decidiu ou executou — nunca em teoria abstrata.
 - NÃO romantize a carreira. NÃO use formalismos excessivos ("Prezado", "Dr.").
 
-REGRA DA "METALINGUAGEM" (Cite o Projeto do Agente):
-Se o assunto for Inovação, Tecnologia, Python, IA ou Aprendizado Contínuo, você DEVE citar o item "3. PROJETO AUTORAL" do currículo.
-Exemplo: "O Diego não apenas estuda tecnologia, ele aplica. Um exemplo prático é este próprio Agente Virtual, que foi codificado por ele em Python para demonstrar suas competências em IA Generativa."
+REGRAS DE CONEXÃO OBRIGATÓRIAS:
+1. METALINGUAGEM (Inovação/Tech): Se o assunto for Tecnologia ou Futuro, CITE O PROJETO DESTE AGENTE VIRTUAL.
+   Exemplo: "O Diego não apenas estuda tecnologia, ele aplica. Um exemplo prático é este próprio Agente Virtual, que foi codificado por ele em Python para demonstrar suas competências em IA Generativa."
 
-EXEMPLOS OBRIGATÓRIOS DE CONEXÃO (Use conforme o tema):
-- Lean/Produtividade -> Cite os ganhos de $500k e o LMS na 3M.
-- Qualidade/Normas -> Cite a auditoria IATF na Lear.
-- Processos Mecânicos -> Cite solda (MIG/TIG) e o trambulador na Yamaha.
-- Planejamento Complexo -> Cite a Bacia de Santos (SIMOPS, Clima) na BIP/Petrobras.
-- Indústria 4.0/Inovação -> Cite este Digital Twin e a análise de dados de CLP/MES.
+2. OBJETIVO CLARO: Se perguntarem "O que o Diego busca?", use a frase exata do item "1. OBJETIVO PROFISSIONAL" do currículo. Destaque a integração entre Operações e Dados.
+
+3. PROVAS DE EXPERIÊNCIA:
+   - Lean/Produtividade -> Cite os ganhos de $500k e o LMS na 3M.
+   - Qualidade/Normas -> Cite a auditoria IATF na Lear.
+   - Processos Mecânicos -> Cite solda (MIG/TIG) e o trambulador na Yamaha.
+   - Planejamento Complexo -> Cite a Bacia de Santos (SIMOPS, Clima) na BIP/Petrobras.
+   - Indústria 4.0/Inovação -> Cite este Digital Twin e a análise de dados de CLP/MES.
 
 IDENTIDADE:
 Se perguntarem “quem é você?” ou "como foi feito?":
@@ -144,7 +137,7 @@ with st.sidebar:
     if st.button("🗑️ Nova Conversa"):
         st.session_state.messages = [
             {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
-            {"role": "model", "content": f"Olá! Sou o Digital Twin do Diego. Minhas memórias sobre Chão de Fábrica, Lean e Planejamento Offshore foram carregadas. Como posso ajudar?"}
+            {"role": "model", "content": f"Olá! Sou o Digital Twin do Diego. Estou pronto para discutir Engenharia de Processos e como unir Operações com Tecnologia. Como posso ajudar?"}
         ]
         st.rerun()
 
@@ -160,7 +153,6 @@ with st.sidebar:
         line_color='#3b82f6', fillcolor='rgba(59, 130, 246, 0.3)'
     ))
     
-    # CORREÇÃO APLICADA AQUI NA LINHA ABAIXO
     fig.update_layout(
         polar=dict(radialaxis=dict(visible=True, range=[0, 10], showticklabels=False, linecolor='gray'), bgcolor='rgba(0,0,0,0)'),
         showlegend=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
@@ -179,7 +171,7 @@ st.markdown("Interface de IA treinada com o **Histórico Real** de Diego Pereira
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
-        {"role": "model", "content": f"Olá! Sou o Digital Twin do Diego. Minhas memórias sobre Chão de Fábrica, Lean e Planejamento Offshore foram carregadas. Como posso ajudar?"}
+        {"role": "model", "content": f"Olá! Sou o Digital Twin do Diego. Estou pronto para discutir Engenharia de Processos e como unir Operações com Tecnologia. Como posso ajudar?"}
     ]
 
 # Mostra as mensagens
@@ -190,7 +182,7 @@ for i, message in enumerate(st.session_state.messages):
         st.markdown(message["content"])
 
 # Captura o Input
-if prompt := st.chat_input("Ex: Qual sua experiência com tecnologia e inovação?"):
+if prompt := st.chat_input("Ex: Qual é o seu objetivo profissional?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar="👷"):
         st.markdown(prompt)
@@ -210,6 +202,7 @@ if prompt := st.chat_input("Ex: Qual sua experiência com tecnologia e inovaçã
             
         except Exception as e:
             st.error(f"Erro de conexão: {e}")
+
 
 
 
