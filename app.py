@@ -47,7 +47,7 @@ def get_model():
 model_name = get_model()
 model = genai.GenerativeModel(model_name)
 
-# --- 4. A MEMÓRIA TÉCNICA DO DIEGO (AGORA COM O AGENTE INCLUÍDO) ---
+# --- 4. A MEMÓRIA TÉCNICA DO DIEGO (COM PROJETO AUTORAL) ---
 curriculo_diego = """
 DADOS PESSOAIS:
 Nome: Diego Ribeiro Guedes Pereira.
@@ -156,12 +156,57 @@ with st.sidebar:
         r=r_values, theta=categories, fill='toself', name='Diego',
         line_color='#3b82f6', fillcolor='rgba(59, 130, 246, 0.3)'
     ))
+    
+    # CORREÇÃO APLICADA AQUI NA LINHA ABAIXO
     fig.update_layout(
         polar=dict(radialaxis=dict(visible=True, range=[0, 10], showticklabels=False, linecolor='gray'), bgcolor='rgba(0,0,0,0)'),
         showlegend=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white', size=10
+        font=dict(color='white', size=10), margin=dict(l=20, r=20, t=10, b=10), height=250
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    st.info("💡 **Diferencial:** Uno a engenharia de chão de fábrica com planejamento estratégico offshore e análise de dados.")
+    st.markdown("📧 diegogpereira@gmail.com")
 
+# --- 7. CHAT ---
+st.title("🏭 Digital Twin | Diego Pereira")
+st.markdown("Interface de IA treinada com o **Histórico Real** de Diego Pereira (Offshore, 3M, Lear, Yamaha).")
 
+# Inicializa Chat
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
+        {"role": "model", "content": f"Olá! Sou o Digital Twin do Diego. Minhas memórias sobre Chão de Fábrica, Lean e Planejamento Offshore foram carregadas. Como posso ajudar?"}
+    ]
+
+# Mostra as mensagens
+for i, message in enumerate(st.session_state.messages):
+    if i == 0: continue 
+    avatar = "🤖" if message["role"] == "model" else "👷"
+    with st.chat_message(message["role"], avatar=avatar):
+        st.markdown(message["content"])
+
+# Captura o Input
+if prompt := st.chat_input("Ex: Qual sua experiência com tecnologia e inovação?"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user", avatar="👷"):
+        st.markdown(prompt)
+
+    with st.chat_message("model", avatar="🤖"):
+        try:
+            history_google = []
+            for m in st.session_state.messages[:-1]:
+                role = "user" if m["role"] == "user" else "model"
+                history_google.append({"role": role, "parts": [m["content"]]})
+            
+            chat = model.start_chat(history=history_google)
+            response = chat.send_message(prompt)
+            
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "model", "content": response.text})
+            
+        except Exception as e:
+            st.error(f"Erro de conexão: {e}")
 
 
 
