@@ -88,6 +88,10 @@ C) YAMAHA MOTOR & SANDVIK (Especialista Industrial):
 - Pós em Lean Manufacturing (FUCAPI) e Finanças (USP-Esalq).
 - Green Belt Six Sigma (3M).
 - Python (Data Science), Power BI, SAP, AutoCAD.
+
+5. Objetivos profissionais:
+- Atuar como Engenheiro de Produção
+- Aplicar experiência adquiridas em engenharia de processos em uma posição TECH com o objetivo de solucionar problemas complexos 
 """
 
 # --- 5. O CÉREBRO (COM REGRAS DE REFERÊNCIA CRUZADA) ---
@@ -207,6 +211,7 @@ if prompt := st.chat_input("Ex: Qual sua experiência com tecnologia e inovaçã
             
         except Exception as e:
             st.error(f"Erro de conexão: {e}")
+
 
 
 
