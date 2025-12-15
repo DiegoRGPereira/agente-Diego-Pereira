@@ -200,7 +200,39 @@ st.markdown("Interface de IA treinada com o **Histórico Real** de Diego Pereira
 # Inicializa Chat
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_
+        {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
+        {"role": "model", "content": f"Olá! Sou o Digital Twin do Diego. Estou pronto para discutir Engenharia de Processos e como unir Operações com Tecnologia. Como posso ajudar?"}
+    ]
+
+# Mostra as mensagens
+for i, message in enumerate(st.session_state.messages):
+    if i == 0: continue 
+    avatar = "🤖" if message["role"] == "model" else "👷"
+    with st.chat_message(message["role"], avatar=avatar):
+        st.markdown(message["content"])
+
+# Captura o Input
+if prompt := st.chat_input("Ex: Qual é o seu objetivo profissional?"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user", avatar="👷"):
+        st.markdown(prompt)
+
+    with st.chat_message("model", avatar="🤖"):
+        try:
+            history_google = []
+            for m in st.session_state.messages[:-1]:
+                role = "user" if m["role"] == "user" else "model"
+                history_google.append({"role": role, "parts": [m["content"]]})
+            
+            chat = model.start_chat(history=history_google)
+            response = chat.send_message(prompt)
+            
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "model", "content": response.text})
+            
+        except Exception as e:
+            st.error(f"Erro de conexão: {e}")
+
 
 
 
