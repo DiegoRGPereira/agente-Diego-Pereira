@@ -33,9 +33,11 @@ if "GEMINI_API_KEY" in st.secrets:
 else:
     st.error("⚠️ Configure a GEMINI_API_KEY nos Secrets do Streamlit.")
 
-# --- 3. SELEÇÃO DE MODELO (CORRIGIDO PARA O CLÁSSICO ESTÁVEL) ---
-# Usamos o 'gemini-pro' padrão que é o mais compatível e tem boa cota gratuita.
-model = genai.GenerativeModel("gemini-pro")
+# --- 3. SELEÇÃO DE MODELO (USANDO O CLÁSSICO PARA EVITAR ERROS) ---
+try:
+    model = genai.GenerativeModel("gemini-pro")
+except:
+    st.error("Erro ao carregar o modelo Gemini Pro.")
 
 # --- 4. A MEMÓRIA TÉCNICA DO DIEGO ---
 curriculo_diego = """
@@ -84,7 +86,7 @@ C) YAMAHA MOTOR & SANDVIK (Especialista Industrial):
 - Python (Data Science), Power BI, SAP, AutoCAD.
 """
 
-# --- 5. O CÉREBRO (COM REGRAS DE REFERÊNCIA CRUZADA) ---
+# --- 5. O CÉREBRO (ESTA PARTE PRECISA ESTAR BEM FECHADA) ---
 system_instruction_text = f"""
 VOCÊ É O DIGITAL TWIN PROFISSIONAL DE DIEGO RIBEIRO GUEDES PEREIRA.
 
@@ -105,7 +107,104 @@ ESTILO DE RESPOSTA:
 - NÃO romantize a carreira. NÃO use formalismos excessivos ("Prezado", "Dr.").
 
 REGRAS DE CONEXÃO OBRIGATÓRIAS:
-1. METALINGUAGEM (Inovação/Tech): Se o assunto for Tecnologia ou Futuro, CITE O PROJETO DESTE AGENTE
+1. METALINGUAGEM (Inovação/Tech): Se o assunto for Tecnologia ou Futuro, CITE O PROJETO DESTE AGENTE VIRTUAL.
+   Exemplo: "O Diego não apenas estuda tecnologia, ele aplica. Um exemplo prático é este próprio Agente Virtual, que foi codificado por ele em Python para demonstrar suas competências em IA Generativa."
+
+2. OBJETIVO CLARO: Se perguntarem "O que o Diego busca?", use a frase exata do item "1. OBJETIVO PROFISSIONAL" do currículo. Destaque a integração entre Operações e Dados.
+
+3. PROVAS DE EXPERIÊNCIA:
+   - Lean/Produtividade -> Cite os ganhos de $500k e o LMS na 3M.
+   - Qualidade/Normas -> Cite a auditoria IATF na Lear.
+   - Processos Mecânicos -> Cite solda (MIG/TIG) e o trambulador na Yamaha.
+   - Planejamento Complexo -> Cite a Bacia de Santos (SIMOPS, Clima) na BIP/Petrobras.
+   - Indústria 4.0/Inovação -> Cite este Digital Twin e a análise de dados de CLP/MES.
+
+IDENTIDADE:
+Se perguntarem “quem é você?” ou "como foi feito?":
+“Sou a inteligência profissional do Diego sintetizada em código Python. Fui criado para mostrar, na prática, como um engenheiro experiente pode integrar indústria, dados e IA.”
+"""
+
+# --- 6. BARRA LATERAL ---
+with st.sidebar:
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.write("🧑‍🔧")
+    with col2:
+        st.markdown("**Diego Pereira**")
+        st.caption("Engenheiro Sênior")
+    
+    st.markdown('<div style="margin-top:10px;"><span class="status-badge">Open to New Opportunities</span></div>', unsafe_allow_html=True)
+    
+    # Botão de Reset
+    if st.button("🗑️ Nova Conversa"):
+        st.session_state.messages = [
+            {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
+            {"role": "model", "content": f"Olá! Sou o Digital Twin do Diego. Estou pronto para discutir Engenharia de Processos e como unir Operações com Tecnologia. Como posso ajudar?"}
+        ]
+        st.rerun()
+
+    st.divider()
+    
+    # Gráfico Radar
+    categories = ['Lean / Six Sigma', 'Planejamento Offshore', 'Python / Dados', 'Liderança', 'SAP / ERP', 'Inglês']
+    r_values = [10, 9, 8, 9, 8, 9]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=r_values, theta=categories, fill='toself', name='Diego',
+        line_color='#3b82f6', fillcolor='rgba(59, 130, 246, 0.3)'
+    ))
+    
+    fig.update_layout(
+        polar=dict(radialaxis=dict(visible=True, range=[0, 10], showticklabels=False, linecolor='gray'), bgcolor='rgba(0,0,0,0)'),
+        showlegend=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='white', size=10), margin=dict(l=20, r=20, t=10, b=10), height=250
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    st.info("💡 **Diferencial:** Uno a engenharia de chão de fábrica com planejamento estratégico offshore e análise de dados.")
+    st.markdown("📧 diegogpereira@gmail.com")
+
+# --- 7. CHAT ---
+st.title("🏭 Digital Twin | Diego Pereira")
+st.markdown("Interface de IA treinada com o **Histórico Real** de Diego Pereira (Offshore, 3M, Lear, Yamaha).")
+
+# Inicializa Chat
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
+        {"role": "model", "content": f"Olá! Sou o Digital Twin do Diego. Estou pronto para discutir Engenharia de Processos e como unir Operações com Tecnologia. Como posso ajudar?"}
+    ]
+
+# Mostra as mensagens
+for i, message in enumerate(st.session_state.messages):
+    if i == 0: continue 
+    avatar = "🤖" if message["role"] == "model" else "👷"
+    with st.chat_message(message["role"], avatar=avatar):
+        st.markdown(message["content"])
+
+# Captura o Input
+if prompt := st.chat_input("Ex: Qual é o seu objetivo profissional?"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user", avatar="👷"):
+        st.markdown(prompt)
+
+    with st.chat_message("model", avatar="🤖"):
+        try:
+            history_google = []
+            for m in st.session_state.messages[:-1]:
+                role = "user" if m["role"] == "user" else "model"
+                history_google.append({"role": role, "parts": [m["content"]]})
+            
+            chat = model.start_chat(history=history_google)
+            response = chat.send_message(prompt)
+            
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "model", "content": response.text})
+            
+        except Exception as e:
+            st.error(f"Erro de conexão: {e}")
+
 
 
 
