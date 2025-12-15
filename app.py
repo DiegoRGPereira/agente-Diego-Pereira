@@ -90,8 +90,7 @@ C) YAMAHA MOTOR & SANDVIK (Especialista Industrial):
 - Python (Data Science), Power BI, SAP, AutoCAD.
 
 5. Objetivos profissionais:
-- Atuar como Engenheiro de Produção
-- Aplicar experiência adquiridas em engenharia de processos em uma posição TECH com o objetivo de solucionar problemas complexos 
+- Atuar como Engenheiro de Processos, integrando experiência sólida em engenharia de processos e operações ao uso de tecnologia e dados para resolver problemas complexos e apoiar decisões estratégica
 """
 
 # --- 5. O CÉREBRO (COM REGRAS DE REFERÊNCIA CRUZADA) ---
@@ -211,6 +210,7 @@ if prompt := st.chat_input("Ex: Qual sua experiência com tecnologia e inovaçã
             
         except Exception as e:
             st.error(f"Erro de conexão: {e}")
+
 
 
 
