@@ -33,11 +33,39 @@ if "GEMINI_API_KEY" in st.secrets:
 else:
     st.error("⚠️ Configure a GEMINI_API_KEY nos Secrets do Streamlit.")
 
-# --- 3. SELEÇÃO DE MODELO (USANDO O CLÁSSICO PARA EVITAR ERROS) ---
+# --- 3. SELEÇÃO DE MODELO INTELIGENTE (RESOLVE ERRO 404 e 429) ---
+@st.cache_resource
+def get_best_model():
+    """Busca qual modelo está disponível na conta do usuário."""
+    try:
+        # Lista todos os modelos que a sua chave tem acesso
+        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        
+        # Tenta achar o Flash 1.5 (Mais rápido e barato)
+        for m in available_models:
+            if '1.5-flash' in m: return m
+            
+        # Tenta achar o Pro 1.5 (Mais inteligente)
+        for m in available_models:
+            if '1.5-pro' in m: return m
+            
+        # Tenta achar o Pro 1.0 (Clássico)
+        for m in available_models:
+            if '1.0-pro' in m: return m
+            
+        # Se não achar nenhum específico, pega o primeiro da lista
+        return available_models[0] if available_models else "gemini-pro"
+        
+    except Exception as e:
+        # Fallback de segurança se der erro na listagem
+        return "gemini-pro"
+
+# Carrega o modelo escolhido automaticamente
+model_name = get_best_model()
 try:
-    model = genai.GenerativeModel("gemini-pro")
+    model = genai.GenerativeModel(model_name)
 except:
-    st.error("Erro ao carregar o modelo Gemini Pro.")
+    st.error(f"Erro crítico: Não foi possível carregar o modelo {model_name}.")
 
 # --- 4. A MEMÓRIA TÉCNICA DO DIEGO ---
 curriculo_diego = """
@@ -172,38 +200,8 @@ st.markdown("Interface de IA treinada com o **Histórico Real** de Diego Pereira
 # Inicializa Chat
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_instruction_text}. Se entendeu, diga apenas 'Olá'."},
-        {"role": "model", "content": f"Olá! Sou o Digital Twin do Diego. Estou pronto para discutir Engenharia de Processos e como unir Operações com Tecnologia. Como posso ajudar?"}
-    ]
+        {"role": "user", "content": f"Aja estritamente conforme estas regras: {system_
 
-# Mostra as mensagens
-for i, message in enumerate(st.session_state.messages):
-    if i == 0: continue 
-    avatar = "🤖" if message["role"] == "model" else "👷"
-    with st.chat_message(message["role"], avatar=avatar):
-        st.markdown(message["content"])
-
-# Captura o Input
-if prompt := st.chat_input("Ex: Qual é o seu objetivo profissional?"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="👷"):
-        st.markdown(prompt)
-
-    with st.chat_message("model", avatar="🤖"):
-        try:
-            history_google = []
-            for m in st.session_state.messages[:-1]:
-                role = "user" if m["role"] == "user" else "model"
-                history_google.append({"role": role, "parts": [m["content"]]})
-            
-            chat = model.start_chat(history=history_google)
-            response = chat.send_message(prompt)
-            
-            st.markdown(response.text)
-            st.session_state.messages.append({"role": "model", "content": response.text})
-            
-        except Exception as e:
-            st.error(f"Erro de conexão: {e}")
 
 
 
